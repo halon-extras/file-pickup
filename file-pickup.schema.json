@@ -1,0 +1,45 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"description": "file-pickup schema",
+	"type": "object",
+	"additionalProperties": false,
+	"properties": {
+		"folders": {
+			"type": "array",
+			"uniqueItems": true,
+			"description": "The folders to watch",
+			"items": {
+				"type": "object",
+				"required": [
+					"id",
+					"path",
+					"serverid"
+				],
+				"additionalProperties": false,
+				"properties": {
+					"id": {
+						"type": "string",
+						"description": "The folder ID"
+					},
+					"path": {
+						"type": "string",
+						"description": "The folder path"
+					},
+					"serverid": {
+						"type": "string",
+						"description": "The server ID"
+					},
+					"threads": {
+                        "type": "number",
+                        "description": "The number of threads",
+                        "default": 1
+                    },
+					"concurrency": {
+                        "type": "number",
+                        "description": "The concurrency"
+                    }
+				}
+			}
+		}
+	}
+}

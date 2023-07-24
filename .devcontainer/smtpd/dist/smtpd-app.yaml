@@ -1,0 +1,87 @@
+resolver:
+  cache:
+    size: 10000
+scripting:
+  files: []
+  hooks:
+    eod:
+    - data: |
+        $transactionid = $transaction["id"];
+        $sender = $transaction["senderaddress"];
+        $recipients = $transaction["recipients"];
+        $mail = $arguments["mail"];
+
+        // Queue message for all recipients
+        foreach ($recipients as $recipient)
+            $mail->queue($sender, $recipient["address"], $recipient["transportid"]);
+
+        Accept();
+      id: foo
+    - data: |-
+        // sleep(1);
+
+        Accept();
+      id: bar
+    - data: |-
+        // sleep(1);
+
+        Accept();
+      id: baz
+    predelivery: |-
+      $transactionid = $message["id"]["transaction"];
+      $queueid = $message["id"]["queue"];
+
+      $folders = ["bar", "baz"];
+      $folder = $folders[random_number(0, 1)];
+
+      if ($message["transportid"] == "file-deliver") {
+          Try([
+              "plugin" => [
+                  "id" => "file-deliver",
+                  "arguments" => [
+                      "filename" => "${folder}/${transactionid}_${queueid}.eml"
+                  ]
+              ]
+          ]);
+      }
+servers:
+- id: foo
+  phases:
+    eod:
+      hook: foo
+  transport: file-deliver
+  type: smtp
+- id: bar
+  phases:
+    eod:
+      hook: bar
+  transport: mx
+  type: plugin
+- id: baz
+  phases:
+    eod:
+      hook: baz
+  transport: mx
+  type: plugin
+transportgroups:
+- dsn:
+    transport: mx
+  id: default
+  retry:
+    count: 30
+    intervals:
+    - interval: 60
+    - interval: 900
+    - interval: 3600
+      notify: true
+    - interval: 7200
+    - interval: 10800
+  transports:
+  - id: mx
+    session:
+      tls:
+        mode: dane
+  - connection:
+      server: 0.0.0.0
+    id: file-deliver
+version: '6.0'

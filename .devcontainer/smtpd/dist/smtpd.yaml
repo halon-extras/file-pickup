@@ -1,0 +1,37 @@
+environment:
+  controlsocket:
+    chmod: '0660'
+    group: staff
+  privdrop:
+    group: halon
+    user: halon
+  rlimit:
+    nofile: 70000
+  umask: '0027'
+  uuid:
+    version: 4
+plugins:
+- config:
+    folders:
+    - id: bar
+      path: /foo/bar
+      serverid: bar
+    - id: baz
+      path: /foo/baz
+      serverid: baz
+  id: file-pickup
+- config:
+    path: /foo
+    tmppath: /foo/foo
+  id: file-deliver
+servers:
+- id: foo
+  listeners:
+  - address: 127.0.0.1
+    port: 25
+  type: smtp
+- id: bar
+  type: plugin
+- id: baz
+  type: plugin
+version: '6.0'

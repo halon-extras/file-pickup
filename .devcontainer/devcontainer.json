@@ -1,0 +1,20 @@
+
+{
+	"name": "file-pickup",
+	"dockerComposeFile": [
+		"docker-compose.yaml"
+	],
+	"workspaceFolder": "/file-pickup",
+	"service": "halon-smtpd",
+	"overrideCommand": false,
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"Halon.vscode-halon",
+				"Halon.hsl-linter",
+				"Halon.hsl-debug",
+				"ms-vscode.cpptools"
+			]
+		}
+	}
+}

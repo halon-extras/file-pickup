@@ -1,0 +1,41 @@
+version: "6.0"
+servers:
+  - id: foo
+    type: smtp
+    listeners:
+      - port: 25
+        address: 127.0.0.1
+  - id: bar
+    type: plugin
+  - id: baz
+    type: plugin
+environment:
+  uuid:
+    version: 4
+  controlsocket:
+    group: staff
+    chmod: "0660"
+  privdrop:
+    user: halon
+    group: halon
+  umask: "0027"
+  rlimit:
+    nofile: 70000
+plugins:
+  - id: file-pickup
+    config:
+      folders:
+        - id: bar
+          path: /foo/bar
+          serverid: bar
+          # threads: 2
+          # concurrency: 4
+        - id: baz
+          path: /foo/baz
+          serverid: baz
+          # threads: 2
+          # concurrency: 4
+  - id: file-deliver
+    config:
+      tmppath: /foo/foo
+      path: /foo
