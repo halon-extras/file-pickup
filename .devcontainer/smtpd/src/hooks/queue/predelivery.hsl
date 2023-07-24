@@ -1,15 +1,15 @@
 $transactionid = $message["id"]["transaction"];
 $queueid = $message["id"]["queue"];
 
-$folders = ["bar", "baz"];
-$folder = $folders[random_number(0, 1)];
+$directories = ["bar", "baz"];
+$directory = $directories[random_number(0, 1)];
 
 if ($message["transportid"] == "file-deliver") {
     Try([
         "plugin" => [
             "id" => "file-deliver",
             "arguments" => [
-                "filename" => "${folder}/${transactionid}_${queueid}.eml"
+                "filename" => "${directory}/${transactionid}_${queueid}.eml"
             ]
         ]
     ]);

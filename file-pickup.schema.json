@@ -4,10 +4,10 @@
 	"type": "object",
 	"additionalProperties": false,
 	"properties": {
-		"folders": {
+		"directories": {
 			"type": "array",
 			"uniqueItems": true,
-			"description": "The folders to watch",
+			"description": "The directories to watch",
 			"items": {
 				"type": "object",
 				"required": [
@@ -19,11 +19,11 @@
 				"properties": {
 					"id": {
 						"type": "string",
-						"description": "The folder ID"
+						"description": "The directory ID"
 					},
 					"path": {
 						"type": "string",
-						"description": "The folder path"
+						"description": "The directory path"
 					},
 					"serverid": {
 						"type": "string",

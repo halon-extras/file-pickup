@@ -26,7 +26,7 @@ For the configuration schema, see [file-pickup.schema.json](file-pickup.schema.j
 plugins:
   - id: file-pickup
     config:
-      folders:
+      directories:
         - id: foo
           path: /foo
           serverid: foo # Should be of type "plugin"
