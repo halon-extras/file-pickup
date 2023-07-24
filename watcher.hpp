@@ -5,6 +5,7 @@
 #include <list>
 #include <condition_variable>
 #include <map>
+#include <atomic>
 
 class FileWatcher
 {
@@ -19,7 +20,7 @@ class FileWatcher
 		std::shared_ptr<std::list<std::string>> m_processing;
 		std::shared_ptr<std::mutex> m_mutex;
 		std::shared_ptr<std::condition_variable> m_cv;
-		bool m_stop = false;
+		std::atomic<bool> m_stop = false;
 		void start();
 	private:
 		int m_fd = 0;
