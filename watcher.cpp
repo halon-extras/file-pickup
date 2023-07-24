@@ -185,7 +185,7 @@ void FileWatcher::iterate(std::string directory)
 				else if (file.is_regular_file())
 					add(file.path());
 			}
-		} catch(std::filesystem::filesystem_error &err) {
+		} catch (std::filesystem::filesystem_error &err) {
 			syslog(LOG_NOTICE, "file-pickup: %s", err.what());
 		}
 	}).detach();
