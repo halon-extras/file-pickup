@@ -148,8 +148,8 @@ void FileWatcher::start()
 
 void FileWatcher::add(std::string file)
 {
-	std::string ext = ".tmp";
-	if (ext.size() < file.size() && !std::equal(ext.rbegin(), ext.rend(), file.rbegin()))
+	std::string ext = ".eml";
+	if (ext.size() < file.size() && std::equal(ext.rbegin(), ext.rend(), file.rbegin()))
 	{
 		m_mutex->lock();
 		m_pending->push_back(file);
