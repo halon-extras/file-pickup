@@ -23,7 +23,7 @@ class FileWatcher
 		std::atomic<bool> m_stop = false;
 		void start();
 	private:
-		int m_fd = 0;
+		int m_fd = -1;
 		std::map<int, std::string> m_wds;
 		void watch(std::string directory);
 		void iterate(std::string directory);
