@@ -17,8 +17,8 @@ void FileInjector(std::shared_ptr<FileWatcher> watcher)
 
 		std::string file = watcher->m_pending->front();
 		watcher->m_pending->pop_front();
-		if (watcher->m_processing->find(file) != watcher->m_processing->end()) continue;
-		watcher->m_processing->insert(file);
+		auto result = watcher->m_processing->insert(file);
+		if (!result.second) continue;
 
 		ul.unlock();
 
