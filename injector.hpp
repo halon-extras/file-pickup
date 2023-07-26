@@ -7,7 +7,7 @@
 
 struct InjectCallbackPtr{
 	std::string file;
-	std::shared_ptr<std::list<std::string>> processing;
+	std::shared_ptr<std::set<std::string>> processing;
 	std::shared_ptr<std::mutex> mutex;
 	std::shared_ptr<std::condition_variable> cv;
 };

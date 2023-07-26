@@ -17,8 +17,8 @@ void FileInjector(std::shared_ptr<FileWatcher> watcher)
 
 		std::string file = watcher->m_pending->front();
 		watcher->m_pending->pop_front();
-		if (std::find(watcher->m_processing->begin(), watcher->m_processing->end(), file) != watcher->m_processing->end()) continue;
-		watcher->m_processing->push_back(file);
+		if (watcher->m_processing->find(file) != watcher->m_processing->end()) continue;
+		watcher->m_processing->insert(file);
 
 		ul.unlock();
 
@@ -28,7 +28,7 @@ void FileInjector(std::shared_ptr<FileWatcher> watcher)
 		{
 			syslog(LOG_CRIT, "file-pickup: Could not open file %s (%m)", file.c_str());
 			watcher->m_mutex->lock();
-			watcher->m_processing->remove(file);
+			watcher->m_processing->erase(file);
 			watcher->m_mutex->unlock();
 			watcher->m_cv->notify_one();
 			continue;
@@ -56,7 +56,7 @@ void FileInjector(std::shared_ptr<FileWatcher> watcher)
 		{
 			syslog(LOG_CRIT, "file-pickup: Commit failed for %s", file.c_str());
 			watcher->m_mutex->lock();
-			watcher->m_processing->remove(file);
+			watcher->m_processing->erase(file);
 			watcher->m_mutex->unlock();
 			watcher->m_cv->notify_one();
 			HalonMTA_inject_abort(hic);
@@ -79,7 +79,7 @@ void InjectCallback(HalonInjectResultContext* hirc, void* ptr)
 			syslog(LOG_CRIT, "file-pickup: Failed to remove file %s (%m)", icp->file.c_str());
 
 	icp->mutex->lock();
-	icp->processing->remove(icp->file);
+	icp->processing->erase(icp->file);
 	icp->mutex->unlock();
 	icp->cv->notify_one();
 

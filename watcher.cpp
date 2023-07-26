@@ -20,7 +20,7 @@ FileWatcher::FileWatcher(std::string id, std::string path, std::string serverid,
 	m_concurrency = concurrency;
 
 	m_pending = std::make_shared<std::list<std::string>>();
-	m_processing = std::make_shared<std::list<std::string>>();
+	m_processing = std::make_shared<std::set<std::string>>();
 	m_mutex = std::make_shared<std::mutex>();
 	m_cv = std::make_shared<std::condition_variable>();
 }

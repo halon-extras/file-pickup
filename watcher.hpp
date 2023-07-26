@@ -3,6 +3,7 @@
 
 #include <string>
 #include <list>
+#include <set>
 #include <condition_variable>
 #include <map>
 #include <atomic>
@@ -17,7 +18,7 @@ class FileWatcher
 		size_t m_threads;
 		size_t m_concurrency;
 		std::shared_ptr<std::list<std::string>> m_pending;
-		std::shared_ptr<std::list<std::string>> m_processing;
+		std::shared_ptr<std::set<std::string>> m_processing;
 		std::shared_ptr<std::mutex> m_mutex;
 		std::shared_ptr<std::condition_variable> m_cv;
 		std::atomic<bool> m_stop = false;
