@@ -30,14 +30,14 @@
 						"description": "The server ID"
 					},
 					"threads": {
-                        "type": "number",
-                        "description": "The number of threads",
-                        "default": 1
-                    },
+						"type": "number",
+						"description": "The number of threads",
+						"default": 1
+					},
 					"concurrency": {
-                        "type": "number",
-                        "description": "The concurrency"
-                    }
+						"type": "number",
+						"description": "The concurrency"
+					}
 				}
 			}
 		}
