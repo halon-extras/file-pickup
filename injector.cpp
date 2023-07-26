@@ -26,7 +26,7 @@ void FileInjector(std::shared_ptr<FileWatcher> watcher)
 		FILE *fp = fopen(file.c_str(), "rb");
 		if (!fp)
 		{
-			syslog(LOG_CRIT, "file-pickup: Could not open file %s", file.c_str());
+			syslog(LOG_CRIT, "file-pickup: Could not open file %s (%m)", file.c_str());
 			watcher->m_mutex->lock();
 			watcher->m_processing->remove(file);
 			watcher->m_mutex->unlock();
@@ -76,7 +76,7 @@ void InjectCallback(HalonInjectResultContext* hirc, void* ptr)
 		syslog(LOG_CRIT, "file-pickup: Injection failed with error code %d for %s", code, icp->file.c_str());
 	else
 		if (unlink(icp->file.c_str()) < 0)
-			syslog(LOG_CRIT, "file-pickup: Failed to remove file %s", icp->file.c_str());
+			syslog(LOG_CRIT, "file-pickup: Failed to remove file %s (%m)", icp->file.c_str());
 
 	icp->mutex->lock();
 	icp->processing->remove(icp->file);
