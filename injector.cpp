@@ -1,5 +1,6 @@
 #include <syslog.h>
 #include <algorithm>
+#include <unistd.h>
 
 #include "injector.hpp"
 
@@ -74,7 +75,7 @@ void InjectCallback(HalonInjectResultContext* hirc, void* ptr)
 	if (code >= 400 && code <= 499)
 		syslog(LOG_CRIT, "file-pickup: Injection failed with error code %d for %s", code, icp->file.c_str());
 	else
-		if (remove(icp->file.c_str()) < 0)
+		if (unlink(icp->file.c_str()) < 0)
 			syslog(LOG_CRIT, "file-pickup: Failed to remove file %s", icp->file.c_str());
 
 	icp->mutex->lock();
