@@ -146,7 +146,7 @@ void FileWatcher::start()
 	close(m_fd);
 }
 
-void FileWatcher::add(std::string file)
+void FileWatcher::add(const std::string &file)
 {
 	std::string ext = ".eml";
 	if (ext.size() < file.size() && std::equal(ext.rbegin(), ext.rend(), file.rbegin()))
@@ -158,7 +158,7 @@ void FileWatcher::add(std::string file)
 	}
 }
 
-void FileWatcher::watch(std::string directory)
+void FileWatcher::watch(const std::string &directory)
 {
 	int wd = inotify_add_watch(m_fd, directory.c_str(), IN_CREATE | IN_MOVED_TO | IN_DELETE_SELF | IN_MOVE_SELF);
 	if (wd < 0)
@@ -172,7 +172,7 @@ void FileWatcher::watch(std::string directory)
 	}
 }
 
-void FileWatcher::iterate(std::string directory)
+void FileWatcher::iterate(const std::string &directory)
 {
 	std::thread([this, directory] () {
 		pthread_setname_np(pthread_self(), std::string("p/fp/d/" + m_id).substr(0, 15).c_str());

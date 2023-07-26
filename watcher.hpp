@@ -25,9 +25,9 @@ class FileWatcher
 	private:
 		int m_fd = -1;
 		std::map<int, std::string> m_wds;
-		void watch(std::string directory);
-		void iterate(std::string directory);
-		void add(std::string file);
+		void watch(const std::string &directory);
+		void iterate(const std::string &directory);
+		void add(const std::string &file);
 };
 
 #endif
