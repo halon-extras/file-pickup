@@ -20,9 +20,19 @@ FileWatcher::FileWatcher(std::string id, std::string path, std::string serverid,
 	m_concurrency = concurrency;
 
 	m_pending = std::make_shared<std::list<std::string>>();
+	m_pending_directories = std::make_shared<std::list<std::string>>();
 	m_processing = std::make_shared<std::set<std::string>>();
 	m_mutex = std::make_shared<std::mutex>();
 	m_cv = std::make_shared<std::condition_variable>();
+	m_cv_directories = std::make_shared<std::condition_variable>();
+}
+
+FileWatcher::~FileWatcher()
+{
+	for (auto wd : m_wds)
+		inotify_rm_watch(m_fd, wd.first);
+	if (m_fd >= 0)
+		close(m_fd);
 }
 
 void FileWatcher::start()
@@ -35,7 +45,10 @@ void FileWatcher::start()
 	}
 	m_fd = fd;
 
-	iterate(m_path);
+	m_mutex->lock();
+	m_pending_directories->push_back(m_path);
+	m_mutex->unlock();
+	m_cv_directories->notify_one();
 
 	while (true)
 	{
@@ -84,8 +97,9 @@ void FileWatcher::start()
 						if (m_wds.count(event->wd) == 1)
 						{
 							std::string path = m_wds.at(event->wd);
+							m_pending_directories->push_back(path + std::string("/") + event->name);
 							m_mutex->unlock();
-							iterate(path + std::string("/") + event->name);
+							m_cv_directories->notify_one();
 						}
 						else
 							m_mutex->unlock();
@@ -114,9 +128,10 @@ void FileWatcher::start()
 							inotify_rm_watch(m_fd, wd.first);
 						m_wds.clear();
 						m_pending->clear();
+						m_pending_directories->clear();
+						m_pending_directories->push_back(m_path);
 						m_mutex->unlock();
-
-						iterate(m_path);
+						m_cv_directories->notify_one();
 					}
 					if ((event->mask & IN_DELETE_SELF) || (event->mask & IN_MOVE_SELF))
 					{
@@ -136,14 +151,6 @@ void FileWatcher::start()
 			}
 		}
 	}
-
-	m_mutex->lock();
-	for (auto wd : m_wds)
-		inotify_rm_watch(m_fd, wd.first);
-	m_wds.clear();
-	m_mutex->unlock();
-
-	close(m_fd);
 }
 
 void FileWatcher::add(const std::string &file)
@@ -172,10 +179,22 @@ void FileWatcher::watch(const std::string &directory)
 	}
 }
 
-void FileWatcher::iterate(const std::string &directory)
+void FileWatcher::iterate()
 {
-	std::thread([this, directory] () {
-		pthread_setname_np(pthread_self(), std::string("p/fp/d/" + m_id).substr(0, 15).c_str());
+	while (true)
+	{
+		std::unique_lock<std::mutex> ul(*m_mutex);
+		m_cv_directories->wait(ul, [this] () {
+			return m_stop || !m_pending_directories->empty();
+		});
+
+		if (m_stop) break;
+
+		std::string directory = m_pending_directories->front();
+		m_pending_directories->pop_front();
+
+		ul.unlock();
+
 		watch(directory.c_str());
 		try {
 			for (const auto & file : std::filesystem::recursive_directory_iterator(directory, std::filesystem::directory_options::skip_permission_denied))
@@ -188,5 +207,5 @@ void FileWatcher::iterate(const std::string &directory)
 		} catch (std::filesystem::filesystem_error &err) {
 			syslog(LOG_NOTICE, "file-pickup: %s", err.what());
 		}
-	}).detach();
+	}
 }

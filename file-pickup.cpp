@@ -33,6 +33,11 @@ void Halon_ready(HalonReadyContext* hrc)
 			watcher->start();
 		}));
 
+		workers.push_back(std::thread([watcher] () {
+			pthread_setname_np(pthread_self(), std::string("p/fp/d/" + watcher->m_id).substr(0, 15).c_str());
+			watcher->iterate();
+		}));
+
 		for (size_t i = 0; i < watcher->m_threads; ++i)
 		{
 			workers.push_back(std::thread([watcher] () {
@@ -50,6 +55,7 @@ void Halon_early_cleanup()
 	{
 		watcher->m_stop = true;
 		watcher->m_cv->notify_all();
+		watcher->m_cv_directories->notify_all();
 	}
 
 	for (auto &worker : workers)
