@@ -1,4 +1,5 @@
 #include "configuration.hpp"
+#include <stdexcept>
 
 bool ParseConfig(HalonConfig* cfg, std::list<std::shared_ptr<FileWatcher>>& watchers)
 {
