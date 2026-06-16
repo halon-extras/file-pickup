@@ -35,6 +35,16 @@ void FileInjector(std::shared_ptr<FileWatcher> watcher)
 		}
 		
 		HalonInjectContext *hic = HalonMTA_inject_new(watcher->m_serverid.c_str());
+		if (!hic)
+		{
+			syslog(LOG_CRIT, "file-pickup: Could not create inject context for %s", file.c_str());
+			watcher->m_mutex->lock();
+			watcher->m_processing->erase(file);
+			watcher->m_mutex->unlock();
+			watcher->m_cv->notify_one();
+			fclose(fp);
+			continue;
+		}
 
 		while (!feof(fp))
 		{
